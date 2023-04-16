@@ -1,4 +1,8 @@
 #!/bin/bash
+
+# Author: Dan Samek (dancz)
+# Project: https://github.com/dancz/jupyter-tools/
+
 nvidia-smi
 echo -n "Enter path to Jupyter notebooks (/mnt/c/notebooks): "
 read pathInput
