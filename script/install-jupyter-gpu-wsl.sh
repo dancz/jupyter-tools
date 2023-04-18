@@ -13,6 +13,16 @@ else
   notebookPath="$pathInput"
 fi
 
+tokenHash=""
+appToken=""
+echo -n "Use fixed token?: [y/N]: "
+read choice
+if [ "$choice"==[Yy]* ]
+then
+  tokenHash=$(openssl rand -base64 48 | sha384sum | head -c 48)
+  appToken=" --NotebookApp.token=$tokenHash" 
+fi
+
 # Download and install Miniconda
 curl https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -o Miniconda3-latest-Linux-x86_64.sh
 bash ./Miniconda3-latest-Linux-x86_64.sh -b
@@ -51,12 +61,16 @@ echo "#!/bin/bash" > ~/bin/jupyterlab
 echo "source ~/.bashrc" >> ~/bin/jupyterlab
 echo "conda activate tf" >> ~/bin/jupyterlab
 echo "cd $notebookPath" >> ~/bin/jupyterlab
-echo "jupyter notebook --NotebookApp.allow_origin='https://colab.research.google.com' --port=8888 --NotebookApp.port_retries=0" >> ~/bin/jupyterlab
+echo "jupyter notebook --NotebookApp.allow_origin='https://colab.research.google.com' --port=8888 --NotebookApp.port_retries=0$appToken" >> ~/bin/jupyterlab
 chmod +x ~/bin/jupyterlab
 
 bold=$(tput bold)
 normal=$(tput sgr0)
 echo
-echo "*****************************************************"
-echo " Type ${bold}jupyterlab${normal} to start jupyter    "
-echo "*****************************************************"
+echo "*************************************************************************"
+if [ -n "$tokenHash" ]
+then
+echo "App token: $tokenHash"
+fi
+echo " Type ${bold}jupyterlab${normal} to start jupyter"
+echo "*************************************************************************"
